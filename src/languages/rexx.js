@@ -5,8 +5,12 @@ Description:
 */
 
 function(hljs) {
+  var REXX_KEYWORDS = 'IF WHEN DO PARSE ....';
+  var REXX_FUNCTIONS = 'ABBREV ADDRESS COMPARE ...';
+  hljs.COMMENT('/*','*/')
   return {
-    keywords: 'foo bar',
-    contains: [ ..., hljs.NUMBER_MODE, ... ]
+    keywords: REXX_KEYWORDS,
+    contains: [ ..., hljs.COMMENT, ... ]
+    case_insensitive: true
   }
 }
