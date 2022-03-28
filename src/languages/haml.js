@@ -1,14 +1,15 @@
 /*
-Language: Haml
+Language: HAML
 Requires: ruby.js
 Author: Dan Allen <dan.j.allen@gmail.com>
-Website: http://google.com/profiles/dan.j.allen
+Website: http://haml.info
 Category: template
 */
 
 // TODO support filter tags like :javascript, support inline HTML
-function(hljs) {
+export default function(hljs) {
   return {
+    name: 'HAML',
     case_insensitive: true,
     contains: [
       {
@@ -19,17 +20,15 @@ function(hljs) {
       // FIXME these comments should be allowed to span indented lines
       hljs.COMMENT(
         '^\\s*(!=#|=#|-#|/).*$',
-        false,
-        {
-          relevance: 0
-        }
+        null,
+        { relevance: 0 }
       ),
       {
         begin: '^\\s*(-|=|!=)(?!#)',
-        starts: {
-          end: '\\n',
-          subLanguage: 'ruby'
-        }
+        end: /$/,
+        subLanguage: 'ruby',
+        excludeBegin: true,
+        excludeEnd: true
       },
       {
         className: 'tag',
@@ -48,8 +47,8 @@ function(hljs) {
             begin: '\\.[\\w-]+'
           },
           {
-            begin: '{\\s*',
-            end: '\\s*}',
+            begin: /\{\s*/,
+            end: /\s*\}/,
             contains: [
               {
                 begin: ':\\w+\\s*=>',
@@ -99,15 +98,13 @@ function(hljs) {
           }
         ]
       },
+      { begin: '^\\s*[=~]\\s*' },
       {
-        begin: '^\\s*[=~]\\s*'
-      },
-      {
-        begin: '#{',
-        starts: {
-          end: '}',
-          subLanguage: 'ruby'
-        }
+        begin: /#\{/,
+        end: /\}/,
+        subLanguage: 'ruby',
+        excludeBegin: true,
+        excludeEnd: true
       }
     ]
   };

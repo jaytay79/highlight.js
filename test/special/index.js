@@ -1,45 +1,40 @@
 'use strict';
 
-let _        = require('lodash');
-let bluebird = require('bluebird');
-let hljs     = require('../../build');
-let { JSDOM } = require('jsdom');
-let readFile = bluebird.promisify(require('fs').readFile);
-let utility  = require('../utility');
+const hljs     = require('../../build');
+hljs.debugMode(); // tests run in debug mode so errors are raised
 
-describe('special cases tests', function() {
-  before(function() {
+const { JSDOM } = require('jsdom');
+const { readFile } = require('fs').promises;
+const utility  = require('../utility');
+
+describe('special cases tests', () => {
+  before(async () => {
     const filename = utility.buildPath('fixtures', 'index.html');
+    const page = await readFile(filename, 'utf-8');
+    const { window } = await new JSDOM(page);
 
-    return readFile(filename, 'utf-8')
-      .then(page => new JSDOM(page))
-      .then(({ window }) => {
-        let blocks;
+    // Allows hljs to use document
+    global.document = window.document;
 
-        // Allows hljs to use document
-        global.document = window.document;
+    // Special language to test endsWithParentVariants
+    hljs.registerLanguage('nested', require('../fixtures/nested.js'));
 
-        // Special language to test endsWithParentVariants
-        hljs.registerLanguage('nested', require('../fixtures/nested.js'));
+    // Setup hljs environment
+    hljs.configure({ tabReplace: '    ' });
+    let blocks = document.querySelectorAll('pre code');
+    blocks.forEach(hljs.highlightElement);
 
-        // Setup hljs environment
-        hljs.configure({ tabReplace: '    ' });
-        hljs.initHighlighting();
+    // Setup hljs for non-`<pre><code>` tests
+    hljs.configure();
 
-        // Setup hljs for non-`<pre><code>` tests
-        hljs.configure({ useBR: true });
-
-        blocks = document.querySelectorAll('.code');
-        _.each(blocks, hljs.highlightBlock);
-      });
+    blocks = document.querySelectorAll('.code');
+    blocks.forEach(hljs.highlightElement);
   });
 
   require('./explicitLanguage');
-  require('./customMarkup');
   require('./languageAlias');
   require('./noHighlight');
   require('./subLanguages');
   require('./buildClassName');
-  require('./useBr');
   require('./endsWithParentVariants')
 });

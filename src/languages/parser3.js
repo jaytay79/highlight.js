@@ -2,29 +2,28 @@
 Language: Parser3
 Requires: xml.js
 Author: Oleg Volchkov <oleg@volchkov.net>
+Website: https://www.parser.ru/en/
 Category: template
 */
 
-function(hljs) {
-  var CURLY_SUBCOMMENT = hljs.COMMENT(
-    '{',
-    '}',
-    {
-      contains: ['self']
-    }
+export default function(hljs) {
+  const CURLY_SUBCOMMENT = hljs.COMMENT(
+    /\{/,
+    /\}/,
+    { contains: [ 'self' ] }
   );
   return {
-    subLanguage: 'xml', relevance: 0,
+    name: 'Parser3',
+    subLanguage: 'xml',
+    relevance: 0,
     contains: [
       hljs.COMMENT('^#', '$'),
       hljs.COMMENT(
-        '\\^rem{',
-        '}',
+        /\^rem\{/,
+        /\}/,
         {
           relevance: 10,
-          contains: [
-            CURLY_SUBCOMMENT
-          ]
+          contains: [ CURLY_SUBCOMMENT ]
         }
       ),
       {
@@ -38,11 +37,11 @@ function(hljs) {
       },
       {
         className: 'variable',
-        begin: '\\$\\{?[\\w\\-\\.\\:]+\\}?'
+        begin: /\$\{?[\w\-.:]+\}?/
       },
       {
         className: 'keyword',
-        begin: '\\^[\\w\\-\\.\\:]+'
+        begin: /\^[\w\-.:]+/
       },
       {
         className: 'number',

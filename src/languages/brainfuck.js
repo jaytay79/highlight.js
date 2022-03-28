@@ -1,21 +1,30 @@
 /*
 Language: Brainfuck
 Author: Evgeny Stepanischev <imbolk@gmail.com>
+Website: https://esolangs.org/wiki/Brainfuck
 */
 
-function(hljs){
-  var LITERAL = {
+/** @type LanguageFn */
+export default function(hljs) {
+  const LITERAL = {
     className: 'literal',
-    begin: '[\\+\\-]',
+    begin: /[+-]+/,
     relevance: 0
   };
   return {
-    aliases: ['bf'],
+    name: 'Brainfuck',
+    aliases: [ 'bf' ],
     contains: [
       hljs.COMMENT(
-        '[^\\[\\]\\.,\\+\\-<> \r\n]',
-        '[\\[\\]\\.,\\+\\-<> \r\n]',
+        /[^\[\]\.,\+\-<> \r\n]/,
+        /[\[\]\.,\+\-<> \r\n]/,
         {
+          contains: [
+            {
+              match: /[ ]+[^\[\]\.,\+\-<> \r\n]/,
+              relevance: 0
+            }
+          ],
           returnEnd: true,
           relevance: 0
         }
@@ -32,8 +41,10 @@ function(hljs){
       },
       {
         // this mode works as the only relevance counter
-        begin: /\+\+|\-\-/, returnBegin: true,
-        contains: [LITERAL]
+        // it looks ahead to find the start of a run of literals
+        // so only the runs are counted as relevant
+        begin: /(?=\+\+|--)/,
+        contains: [ LITERAL ]
       },
       LITERAL
     ]

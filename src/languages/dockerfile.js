@@ -3,14 +3,27 @@ Language: Dockerfile
 Requires: bash.js
 Author: Alexis Hénaut <alexis@henaut.net>
 Description: language definition for Dockerfile files
+Website: https://docs.docker.com/engine/reference/builder/
 Category: config
 */
 
-function(hljs) {
+/** @type LanguageFn */
+export default function(hljs) {
+  const KEYWORDS = [
+    "from",
+    "maintainer",
+    "expose",
+    "env",
+    "arg",
+    "user",
+    "onbuild",
+    "stopsignal"
+  ];
   return {
-    aliases: ['docker'],
+    name: 'Dockerfile',
+    aliases: [ 'docker' ],
     case_insensitive: true,
-    keywords: 'from maintainer expose env arg user onbuild stopsignal',
+    keywords: KEYWORDS,
     contains: [
       hljs.HASH_COMMENT_MODE,
       hljs.APOS_STRING_MODE,
@@ -25,5 +38,5 @@ function(hljs) {
       }
     ],
     illegal: '</'
-  }
+  };
 }
